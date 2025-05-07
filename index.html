@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vota il Giocatore dell’Anno – Calcio Padova</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fdf6f6;
+      padding: 20px;
+    }
+    form {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #ff4c4c;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .success, .error {
+      margin-top: 20px;
+      padding: 10px;
+      text-align: center;
+      border-radius: 5px;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="voteForm">
+    <h2>Vota il Giocatore dell’Anno</h2>
+    <input type="text" id="nome" placeholder="Nome" required />
+    <input type="text" id="cognome" placeholder="Cognome" required />
+    <input type="email" id="email" placeholder="Email" required />
+    <select id="giocatore" required>
+      <option value="">Seleziona un giocatore</option>
+      <option>Mattia Bortolussi</option>
+      <option>Nicolò Bianchi</option>
+      <option>Simone Palombi</option>
+    </select>
+    <label>
+      <input type="checkbox" required /> Autorizzo il trattamento dati (GDPR)
+    </label>
+    <button type="submit">Invia</button>
+    <div id="message"></div>
+  </form>
+
+  <script>
+    const form = document.getElementById("voteForm");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      message.textContent = "";
+      message.className = "";
+
+      const data = {
+        nome: document.getElementById("nome").value,
+        cognome: document.getElementById("cognome").value,
+        email: document.getElementById("email").value,
+        giocatore: document.getElementById("giocatore").value
+      };
+
+      fetch("https://script.google.com/macros/s/AKfycbxhOqtgc_rRQ-tFBZI-AzXGqMV9kByV5bon-rSeF25Pq7d-MOTAuha6MzV-egT6UJmm/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(response => response.text())
+      .then(text => {
+        if (text.includes("OK")) {
+          message.textContent = "✅ Voto inviato con successo!";
+          message.className = "success";
+          form.reset();
+        } else {
+          message.textContent = "❌ Errore del server: " + text;
+          message.className = "error";
+        }
+      })
+      .catch(err => {
+        message.textContent = "❌ Errore di rete: " + err;
+        message.className = "error";
+      });
+    });
+  </script>
+
+</body>
+</html>
